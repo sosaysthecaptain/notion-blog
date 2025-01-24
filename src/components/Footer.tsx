@@ -7,7 +7,7 @@ export default function Footer() {
         Copyright © {year} Marc Auger
       </div>
       <div className="footer-links">
-        <a href="/blog" className="footer-link">Archive</a>
+        <a href="/blog" className="footer-link">Projects</a>
         <span className="footer-separator">|</span>
         <a href="/gallery" className="footer-link">Optical Profilometer</a>
         <span className="footer-separator">|</span>

@@ -25,12 +25,11 @@ export default function Navigation() {
       {/* Navigation */}
       <nav className="border-b border-gray-200 mb-8">
         <div className="flex justify-end space-x-6 pb-4 text-[15px]">
-          <a href="/blog" className="nav-link">blog</a>
-          <a href="/gallery" className="nav-link">gallery</a>
+          <a href="/blog" className="nav-link">Projects</a>
           <a href="/gitbot9000" className="nav-link">GitBot9000</a>
           <a href="/fdm-startup" className="nav-link">FDM startup</a>
           <a href="/space-trader" className="nav-link">Space Trader</a>
-          <a href="/about" className="nav-link">about</a>
+          <a href="/about" className="nav-link">About</a>
         </div>
       </nav>
     </header>

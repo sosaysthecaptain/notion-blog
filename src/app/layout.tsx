@@ -15,11 +15,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Navigation />
-        <main className="max-w-5xl mx-auto px-4">
-          {children}
-        </main>
+      <body className="page-container">
+        <div className="content-wrapper">
+          <Navigation />
+          <main className="max-w-5xl mx-auto px-4">
+            {children}
+          </main>
+        </div>
         <Footer />
       </body>
     </html>
