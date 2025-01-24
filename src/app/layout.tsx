@@ -7,6 +7,9 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Marc Auger - Hardware & Software Projects',
   description: 'Personal website and blog of Marc Auger, featuring hardware and software projects',
+  icons: {
+    icon: '/favicon.ico',
+  }
 }
 
 export default function RootLayout({

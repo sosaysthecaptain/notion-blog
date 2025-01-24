@@ -6,6 +6,7 @@ const notion = new Client({
 })
 
 export async function getRecentPosts(count: number = 3): Promise<BlogPost[]> {
+  debugger
   try {
     const response = await notion.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
@@ -23,7 +24,7 @@ export async function getRecentPosts(count: number = 3): Promise<BlogPost[]> {
       ],
       page_size: count,
     });
-    debugger
+
 
     const posts = response.results.map((page: any) => ({
       id: page.id,
