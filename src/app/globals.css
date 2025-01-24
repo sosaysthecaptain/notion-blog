@@ -64,15 +64,37 @@ a:hover {
 }
 
 /* Footer */
+.footer {
+  margin: 40px auto;
+  text-align: center;
+  max-width: 800px;
+}
+
 .footer-text {
   color: var(--text);
   font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.footer-links {
+  font-size: 12px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
 }
 
 .footer-link {
+  color: var(--text);
   text-decoration: underline;
+  font-size: 12px;
 }
 
 .footer-link:hover {
   color: var(--primary);
+}
+
+.footer-separator {
+  color: var(--text);
+  font-size: 12px;
 }
