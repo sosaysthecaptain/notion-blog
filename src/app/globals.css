@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: rgb(86, 158, 80);
+  --light-gray: rgb(171, 171, 168);
+  --text: rgb(51, 51, 51);
+}
+
+/* Base styles */
+body {
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Lucida, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text);
+}
+
+/* Typography */
+a {
+  text-decoration: none;
+  color: var(--primary);
+  font-size: 12px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Headers */
+.h1 {
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Navigation specific */
+.subheader {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.nav-link {
+  color: #5e5f5f;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+/* Utility classes */
+.divider {
+  border-bottom: 1px solid var(--light-gray);
+  width: 600px;
+}
+
+/* Content specific */
+.subheader-date {
+  color: var(--light-gray);
+  font-size: 12px;
+}
+
+/* Footer */
+.footer-text {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.footer-link {
+  text-decoration: underline;
+}
+
+.footer-link:hover {
+  color: var(--primary);
+}
