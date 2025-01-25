@@ -24,3 +24,30 @@ export async function fetchRecentBlogPosts(count: number = 3, cursor?: string) {
     return { posts: [], next_cursor: null, has_more: false };
   }
 }
+
+export async function fetchBlogPostBySlug(slug: string) {
+  try {
+    const response = await fetch(`${FUNCTION_BASE_URL}/getBlogPost`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: { slug } })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.result) {
+      throw new Error('Post not found');
+    }
+
+    return data.result as BlogPost;
+  } catch (error) {
+    console.error(`Error fetching post with slug ${slug}:`, error);
+    return null;
+  }
+}
