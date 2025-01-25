@@ -1,130 +1,114 @@
 /*
-firebase functions:config:set notion.api_key="xxx"
-firebase functions:config:set notion.database_id="xxx"
+firebase functions:secrets:set NOTION_API_KEY
+firebase functions:secrets:set NOTION_DATABASE_ID
+firebase functions:secrets:get
 */
 
+import * as functions from "firebase-functions/v2"; // <-- V2 IMPORT
+import { setGlobalOptions } from "firebase-functions/v2";
+import * as logger from "firebase-functions/logger"; // <-- V2 LOGGER
+// import cors from "cors";
+import { Client } from "@notionhq/client";
 
-import * as functions from "firebase-functions";
-import {Client} from "@notionhq/client";
-
-const NOTION_API_KEY = process.env.NOTION_API_KEY || '';
-const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID || '';
-
-const notion = new Client({
-  auth: NOTION_API_KEY,
+// Set global Firebase options
+setGlobalOptions({
+  region: "us-central1",
+  maxInstances: 3,
 });
 
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  publishedAt: string;
-  created: string;
-  excerpt?: string;
-  thumbnail?: string;
-  content?: string;
-}
+// ========== Helper Functions ==========
+const getConfig = () => {
+  return {
+    notionApiKey: process.env.NOTION_API_KEY || "",
+    notionDbId: process.env.NOTION_DATABASE_ID || "",
+  };
+};
 
-export const getRecentBlogPosts = functions.https.onCall(async (data: any, context) => {
-  const {count = 3, cursor} = data;
+const validateConfig = () => {
+  const config = getConfig();
+  logger.log("Environment config check:", {
+    hasApiKey: !!config.notionApiKey,
+    hasDbId: !!config.notionDbId,
+  });
 
-  try {
-    const queryParams: any = {
-      database_id: NOTION_DATABASE_ID!,
-      filter: {
-        property: "published",
-        checkbox: {
-          equals: true,
+  if (!config.notionApiKey || !config.notionDbId) {
+    throw new Error("Missing Notion configuration in environment variables");
+  }
+};
+
+// ========== Cloud Functions ==========
+export const getRecentBlogPosts = functions.https.onRequest(
+  {
+    cors: true, // <-- Built-in CORS handling
+    secrets: ["NOTION_API_KEY", "NOTION_DATABASE_ID"],
+    memory: "256MiB",
+  },
+  async (request, response) => {
+    logger.log("getRecentBlogPosts execution started");
+
+    try {
+      validateConfig();
+      const { notionApiKey, notionDbId } = getConfig();
+
+      if (request.method !== "POST") {
+        logger.error("Invalid method", { method: request.method });
+        response.status(405).send({ error: "Method not allowed" });
+        return;
+      }
+
+      const notion = new Client({ auth: notionApiKey });
+      logger.log("Notion client initialized");
+
+      const { count = 3, cursor } = request.body?.data || {};
+      logger.log("Request parameters:", { count, cursor });
+
+      const queryParams = {
+        database_id: notionDbId,
+        filter: {
+          property: "published",
+          checkbox: { equals: true },
         },
-      },
-      sorts: [
-        {
+        sorts: [{
           property: "publication_date",
           direction: "descending",
-        },
-      ],
-      page_size: count,
-    };
+        }],
+        page_size: Math.min(Math.max(1, count), 100),
+        ...(cursor && { start_cursor: cursor }),
+      };
 
-    // Add cursor if provided
-    if (cursor) {
-      queryParams.start_cursor = cursor;
+      logger.debug("Query params:", queryParams);
+      const notionResponse = await notion.databases.query(queryParams);
+      logger.log(`Found ${notionResponse.results.length} pages`);
+
+      const posts = notionResponse.results.map((page: any) => ({
+        id: page.id,
+        title: page.properties.Name.title[0]?.plain_text || "Untitled",
+        slug: page.properties.slug.rich_text[0]?.plain_text || "",
+        publishedAt: page.properties.publication_date?.date?.start || "",
+        created: page.created_time,
+        excerpt: page.properties.excerpt?.rich_text[0]?.plain_text || "",
+        thumbnail: page.properties.thumbnail?.url || "",
+      }));
+
+      response.json({
+        result: {
+          posts,
+          next_cursor: notionResponse.next_cursor,
+          has_more: notionResponse.has_more,
+        }
+      });
+
+    } catch (error: any) {
+      logger.error("CRASHED:", error);
+      response.status(500).json({
+        error: {
+          code: error.code || "internal",
+          message: error.message || "Unknown error",
+          details: error.details || undefined,
+        }
+      });
     }
-
-    const response = await notion.databases.query(queryParams);
-
-    const posts = response.results.map((page: any) => ({
-      id: page.id,
-      title: page.properties.Name.title[0]?.plain_text || "Untitled",
-      slug: page.properties.slug.rich_text[0]?.plain_text || "",
-      publishedAt: page.properties.publication_date?.date?.start || "",
-      created: page.created_time,
-      excerpt: page.properties.excerpt?.rich_text[0]?.plain_text || "",
-      thumbnail: page.properties.thumbnail?.url || "",
-    }));
-
-    return {
-      posts,
-      next_cursor: response.next_cursor,
-      has_more: response.has_more,
-    };
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    throw new functions.https.HttpsError("internal", "Error fetching posts");
   }
-});
+);
 
-export const getBlogPost = functions.https.onCall(async (data: any, context) => {
-  const {slug} = data;
-
-  try {
-    // First query the database to find the page by slug
-    const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
-      filter: {
-        and: [
-          {
-            property: "slug",
-            rich_text: {
-              equals: slug,
-            },
-          },
-          {
-            property: "published",
-            checkbox: {
-              equals: true,
-            },
-          },
-        ],
-      },
-    });
-
-    if (!response.results.length) {
-      throw new functions.https.HttpsError("not-found", "Post not found");
-    }
-
-    const page = response.results[0] as any;
-
-    // Get the full page content
-    const blocks = await notion.blocks.children.list({
-      block_id: page.id,
-    });
-
-    // Basic post metadata
-    const post: BlogPost = {
-      id: page.id,
-      title: page.properties.Name.title[0]?.plain_text || "Untitled",
-      slug: page.properties.slug.rich_text[0]?.plain_text || "",
-      publishedAt: page.properties.publication_date?.date?.start || "",
-      created: page.created_time,
-      excerpt: page.properties.excerpt?.rich_text[0]?.plain_text || "",
-      thumbnail: page.properties.thumbnail?.url || "",
-      content: JSON.stringify(blocks), // We'll parse this on the frontend
-    };
-
-    return post;
-  } catch (error) {
-    console.error("Error fetching post:", error);
-    throw new functions.https.HttpsError("internal", "Error fetching post");
-  }
-});
+// Similar structure for getBlogPost
