@@ -41,6 +41,14 @@ h3, .h3 {
 p {
   margin-bottom: 16px;
   line-height: 1.6;
+  font-size: 14px;
+}
+
+a {
+  color: var(--primary);
+}
+a:hover {
+  text-decoration: underline;
 }
 
 /* Code formatting */
@@ -146,7 +154,6 @@ pre code {
 .page-container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 0 16px;
 }
 
 .blog-posts {
