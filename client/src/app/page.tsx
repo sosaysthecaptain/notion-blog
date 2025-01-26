@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { fetchRecentBlogPosts } from '@/lib/api'
 import { BlogPost } from '@/types'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function Home() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -29,16 +28,16 @@ export default function Home() {
   }, []);
 
   if (loading) return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="animate-pulse space-y-8">
+    <div className="page-container">
+      <div className="animate-pulse space-y-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="space-y-4">
-            <div className="h-48 bg-gray-200 rounded" />
-            <div className="h-6 bg-gray-200 rounded w-3/4" />
-            <div className="h-4 bg-gray-200 rounded w-1/4" />
+          <div key={i} className="space-y-2">
+            <div className="h-6 bg-gray-200 w-3/4" />
+            <div className="h-4 bg-gray-200 w-1/4" />
+            <div className="h-48 bg-gray-200" />
             <div className="space-y-2">
-              <div className="h-4 bg-gray-200 rounded" />
-              <div className="h-4 bg-gray-200 rounded" />
+              <div className="h-4 bg-gray-200" />
+              <div className="h-4 bg-gray-200" />
             </div>
           </div>
         ))}
@@ -47,41 +46,52 @@ export default function Home() {
   );
 
   if (error) return (
-    <div className="max-w-4xl mx-auto px-4 py-8 text-red-600">
-      Error: {error}
+    <div className="page-container">
+      <div className="text-red-600">Error: {error}</div>
     </div>
   );
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="space-y-12">
-        {posts.map((post) => (
-          <article key={post.id} className="group">
-            <Link href={`/blog/${post.slug}`} className="block">
-              {post.thumbnail && (post.thumbnail.endsWith('.png') || post.thumbnail.endsWith('.jpg')) && (
+    <div className="page-container">
+      <h1 className="page-title">Blog</h1>
+      <div style={{marginBottom: 40}}>This is some text</div>
+
+
+      <div className="blog-posts">
+        {posts.map((post, index) => (
+          <article key={post.id} className="blog-post">
+            <h1 className="post-title">
+              <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+            </h1>
+            {post.publishedAt && (
+              <div className="post-date">
+                {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </div>
+            )}
+            <div className="post-divider"></div>
+            {post.thumbnail && (post.thumbnail.endsWith('.png') || post.thumbnail.endsWith('.jpg')) && (
+              <div className="post-image-container">
                 <img
                   src={post.thumbnail}
                   alt={post.title}
-                  className="mb-4"
+                  className="post-image"
                 />
-              )}
-              <h3 className="text-[rgb(86,158,80)] text-xl font-bold mb-2 group-hover:underline">
-                {post.title}
-              </h3>
-              {post.publishedAt && (
-                <div className="text-[rgb(171,171,168)] text-sm mb-3">
-                  {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </div>
-              )}
-              {post.excerpt && (
-                <p className="text-[rgb(51,51,51)] line-clamp-3">
-                  {post.excerpt}
-                </p>
-              )}
+              </div>
+            )}
+            {post.excerpt && (
+              <p className="post-excerpt">
+                {post.excerpt}
+              </p>
+            )}
+            <Link
+              href={`/blog/${post.slug}`}
+              className="read-more"
+            >
+              Read more...
             </Link>
           </article>
         ))}

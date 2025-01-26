@@ -142,3 +142,68 @@ pre code {
   color: var(--text);
   font-size: 12px;
 }
+
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.blog-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;  /* Spacing between posts */
+}
+
+.blog-post {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: rgb(86, 158, 80);
+  margin: 0 0 4px 0;
+}
+
+.post-title a:hover {
+  text-decoration: underline;
+}
+
+.post-date {
+  color: rgb(171, 171, 168);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.post-divider {
+  border-bottom: 1px solid rgb(171, 171, 168);
+  opacity: 0.5;
+  width: 600px;
+  margin-bottom: 12px;
+}
+
+.post-image-container {
+  margin-bottom: 12px;
+}
+
+.post-image {
+  max-width: 500px;
+  height: auto;
+}
+
+.post-excerpt {
+  color: rgb(51, 51, 51);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.read-more {
+  color: rgb(86, 158, 80);
+  font-size: 14px;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+}
