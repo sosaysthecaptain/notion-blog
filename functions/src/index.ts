@@ -87,7 +87,7 @@ export const getRecentBlogPosts = functions.https.onRequest(
         publishedAt: page.properties.publication_date?.date?.start || "",
         created: page.created_time,
         excerpt: page.properties.excerpt?.rich_text[0]?.plain_text || "",
-        thumbnail: page.properties.thumbnail?.url || "",
+        thumbnail: page.properties.thumbnail?.rich_text[0]?.plain_text || "",
       }));
 
       response.json({

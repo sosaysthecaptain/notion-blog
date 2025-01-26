@@ -1,5 +1,5 @@
 // app/blog/[slug]/page.tsx
-'use client' // ← Add this directive
+'use client'
 
 import { renderNotionBlocks } from '@/lib/notionRenderer';
 import { useEffect, useState } from 'react'
@@ -20,13 +20,6 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           router.replace('/404');
           return;
         }
-
-        // Add type assertion if needed
-        // debugger
-        // const r = renderNotionBlocks(data.content)
-        // console.log(r)
-        // debugger
-
 
         const processedPost: any = {
           ...data,
