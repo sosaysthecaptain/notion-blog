@@ -14,7 +14,7 @@ export default function Home() {
     const loadPosts = async () => {
       try {
         setLoading(true);
-        const { posts: newPosts } = await fetchRecentBlogPosts(5);
+        const { posts: newPosts } = await fetchRecentBlogPosts(15);
         setPosts(newPosts);
       } catch (err) {
         setError('Failed to load posts');
@@ -53,8 +53,8 @@ export default function Home() {
 
   return (
     <div className="page-container">
-      <h1 className="page-title">Blog</h1>
-      <div style={{marginBottom: 40}}>This is some text</div>
+      {/* <h1 className="page-title">Blog</h1>
+      <div style={{marginBottom: 40}}>This is some text</div> */}
 
 
       <div className="blog-posts">
