@@ -39,7 +39,6 @@ export async function fetchBlogPostBySlug(slug: string) {
     }
 
     const data = await response.json();
-    debugger
 
     if (!data.result) {
       throw new Error('Post not found');

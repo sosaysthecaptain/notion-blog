@@ -6,5 +6,5 @@ export interface BlogPost {
   created: string
   excerpt?: string
   thumbnail?: string
-  content?: string
+  content: any[];
 }

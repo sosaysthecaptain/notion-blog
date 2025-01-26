@@ -1,6 +1,7 @@
 // app/blog/[slug]/page.tsx
 'use client' // ← Add this directive
 
+import { renderNotionBlocks } from '@/lib/notionRenderer';
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { fetchBlogPostBySlug } from '@/lib/api'
@@ -14,17 +15,32 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
   useEffect(() => {
     const loadPost = async () => {
       try {
-        const data = await fetchBlogPostBySlug(params.slug)
+        const data = await fetchBlogPostBySlug(params.slug);
         if (!data) {
-          router.replace('/404')
-          return
+          router.replace('/404');
+          return;
         }
-        setPost(data)
+
+        // Add type assertion if needed
+        // debugger
+        // const r = renderNotionBlocks(data.content)
+        // console.log(r)
+        // debugger
+
+
+        const processedPost: any = {
+          ...data,
+          content: Array.isArray(data.content)
+            ? renderNotionBlocks(data.content)
+            : ''
+        };
+
+        setPost(processedPost);
       } catch (error) {
-        console.error('Failed to load post:', error)
-        router.replace('/404')
+        console.error('Failed to load post:', error);
+        router.replace('/404');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
