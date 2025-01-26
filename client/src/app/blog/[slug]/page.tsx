@@ -49,9 +49,12 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
   if (loading) return <div>Loading...</div>
 
+  //@ts-ignore
+  const title = post?.properties?.Name?.title[0]?.plain_text
+
   return (
     <article className="max-w-2xl mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-4">{post?.title}</h1>
+      <h1 className="">{title}</h1>
       {post?.publishedAt && (
         <p className="text-gray-500 mb-6">
           {new Date(post.publishedAt).toLocaleDateString()}
