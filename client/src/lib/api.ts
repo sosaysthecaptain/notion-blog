@@ -27,6 +27,7 @@ export async function fetchRecentBlogPosts(count: number = 3, cursor?: string) {
 
 export async function fetchBlogPostBySlug(slug: string) {
   try {
+    debugger
     const response = await fetch(`${FUNCTION_BASE_URL}/getBlogPost`, {
       method: 'POST',
       headers: {
