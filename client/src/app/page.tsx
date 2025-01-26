@@ -52,33 +52,19 @@ export default function Home() {
     </div>
   );
 
-  posts.forEach((post) => {
-    console.log(post.title)
-    console.log(post.thumbnail)
-  })
-  debugger
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* <h2 className="h2">Recent Projects</h2> */}
       <div className="space-y-12">
         {posts.map((post) => (
           <article key={post.id} className="group">
             <Link href={`/blog/${post.slug}`} className="block">
-              <div className="relative aspect-[16/9] mb-4 overflow-hidden rounded">
-                {post.thumbnail && post.thumbnail?.includes('.png') ? (
-                  <Image
-                    src={post.thumbnail}
-                    alt={post.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                    <span className="text-gray-400">No image available</span>
-                  </div>
-                )}
-              </div>
+              {post.thumbnail && (post.thumbnail.endsWith('.png') || post.thumbnail.endsWith('.jpg')) && (
+                <img
+                  src={post.thumbnail}
+                  alt={post.title}
+                  className="mb-4"
+                />
+              )}
               <h3 className="text-[rgb(86,158,80)] text-xl font-bold mb-2 group-hover:underline">
                 {post.title}
               </h3>
