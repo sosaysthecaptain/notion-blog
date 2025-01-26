@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { fetchRecentBlogPosts } from '@/lib/api'
 import { BlogPost } from '@/types'
+import Link from 'next/link'
 
 export default function Home() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -36,7 +37,7 @@ export default function Home() {
           {posts.map((post) => (
             <article key={post.id}>
               <h3>
-                <a href={`/blog/${post.slug}`}>{post.title}</a>
+              <Link href={`/blog/${post.slug}`}>{post.title}</Link>
               </h3>
               {post.publishedAt && (
                 <div className="subheader-date">

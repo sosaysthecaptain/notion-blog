@@ -17,7 +17,6 @@ export async function fetchRecentBlogPosts(count: number = 3, cursor?: string) {
     }
 
     const data = await response.json();
-    debugger
     return data.result;
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -27,7 +26,6 @@ export async function fetchRecentBlogPosts(count: number = 3, cursor?: string) {
 
 export async function fetchBlogPostBySlug(slug: string) {
   try {
-    debugger
     const response = await fetch(`${FUNCTION_BASE_URL}/getBlogPost`, {
       method: 'POST',
       headers: {
@@ -41,6 +39,7 @@ export async function fetchBlogPostBySlug(slug: string) {
     }
 
     const data = await response.json();
+    debugger
 
     if (!data.result) {
       throw new Error('Post not found');

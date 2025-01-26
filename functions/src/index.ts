@@ -111,4 +111,56 @@ export const getRecentBlogPosts = functions.https.onRequest(
   }
 );
 
-// Similar structure for getBlogPost
+export const getBlogPost = functions.https.onRequest(
+  {
+    cors: true,
+    secrets: ["NOTION_API_KEY", "NOTION_DATABASE_ID"],
+    memory: "256MiB"
+  },
+  async (request, response) => {
+    try {
+      validateConfig();
+      const { notionApiKey } = getConfig();
+
+      if (request.method !== 'POST') {
+        response.status(405).json({ error: 'Method not allowed' });
+        return;
+      }
+
+      const { slug } = request.body.data;
+      const notion = new Client({ auth: notionApiKey });
+
+      // Search for page with matching slug
+      const searchResponse = await notion.databases.query({
+        database_id: process.env.NOTION_DATABASE_ID || '',
+        filter: {
+          property: "slug",
+          rich_text: { equals: slug }
+        }
+      });
+
+      if (searchResponse.results.length === 0) {
+        response.status(404).json({ error: 'Post not found' });
+        return;
+      }
+
+      const page = searchResponse.results[0];
+      const blocks = await notion.blocks.children.list({ block_id: page.id });
+
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Content-Type', 'application/json');
+      response.status(200).json({
+        result: {
+          ...page,
+          content: blocks.results
+        }
+      });
+
+    } catch (error: any) {
+      logger.error("Error in getBlogPost:", error);
+      response.status(500).json({
+        error: error.message
+      });
+    }
+  }
+);
